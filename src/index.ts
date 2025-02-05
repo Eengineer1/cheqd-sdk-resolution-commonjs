@@ -1,7 +1,6 @@
 import {
   AbstractCheqdSDKModule,
   CheqdNetwork,
-  CheqdSDK,
   createCheqdSDK,
   createDidPayload,
   createDidVerificationMethod,
@@ -77,9 +76,22 @@ const run = async () => {
     { sdk: cheqdSDK }
   )
 
-  console.warn('did document:', JSON.stringify(didDocument, null, 2));
+  // add bigint to string serialiser replacer
+  function bigIntToString(key: string, value: any) {
+    if (typeof value === "bigint") {
+      return value.toString();
+    }
+    return value;
+  }
 
-  console.warn('did tx:', JSON.stringify(createDidDocResponse, null, 2));
+  console.warn('did document:', JSON.stringify(didDocument, bigIntToString, 2));
+
+  console.warn('did tx:', JSON.stringify(createDidDocResponse, bigIntToString, 2));
+
+  // query did
+  const queryDidDocResponse = await cheqdSDK.queryDidDoc(didDocument.id);
+
+  console.warn('query did tx:', JSON.stringify(queryDidDocResponse, bigIntToString, 2));
 };
 
 run().catch(console.error);

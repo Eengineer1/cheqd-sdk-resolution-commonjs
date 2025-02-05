@@ -1,4 +1,4 @@
-# Sample CommonJS restrictive module, loading `@cheqd/sdk` all-inclusive release. Use as a reference for your own project
+# Sample ECMAScript Module restrictive module, loading `@cheqd/sdk` all-inclusive release. Use as a reference for your own project
 
 Run the following successive commands to install the dependencies and run the sample:
 
