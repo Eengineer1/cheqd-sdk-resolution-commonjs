@@ -45,7 +45,7 @@ const run = async () => {
 
   // update controller of did_document_b with did_document_a
   did_document_b.controller = [did_document_a.id]
-  
+
   await updateDid(did_document_b, keyPair_a, keyPair_b, feePayer, cheqdSDK);
 };
 
@@ -99,18 +99,20 @@ const updateDid = async (did_document_b: DIDDocument, keyPair_a: IKeyPair, keyPa
     // create sign inputs
     const signInputs = [
         {
-            verificationMethodId: did_document_b.verificationMethod![0].id as string, // controller b
+            verificationMethodId: did_document_b.verificationMethod![0].id, // controller b
             privateKeyHex: toString(fromString(keyPair_b.privateKey, "base64"), "hex"), // signature b
         },
         {
-            verificationMethodId: `${did_document_b.controller![0]}#key-1` as string, // controller a
+            verificationMethodId: `${did_document_b.controller![0]}#key-1`, // controller a
             privateKeyHex: toString(fromString(keyPair_a.privateKey, "base64"), "hex"), // signature a
         },
     ] satisfies ISignInputs[];
 
+    console.warn('sign inputs:', JSON.stringify(signInputs, null, 2));
+
     // define fee amount
     const fee = await DIDModule.generateCreateDidDocFees(feePayer);
-  
+
     // update did
     const updateDidDocResponse = await cheqdSDK.updateDidDocTx(
       signInputs,
@@ -125,7 +127,7 @@ const updateDid = async (did_document_b: DIDDocument, keyPair_a: IKeyPair, keyPa
     console.warn('did document:', JSON.stringify(did_document_b, null, 2));
 
     console.warn('did tx:', JSON.stringify(updateDidDocResponse, null, 2));
-  
+
     return did_document_b
 }
 
