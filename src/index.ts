@@ -29,7 +29,7 @@ const run = async () => {
       "sketch mountain erode window enact net enrich smoke claim kangaroo another visual write meat latin bacon pulp similar forum guilt father state erase bright",
     { prefix: "cheqd" }),
   } satisfies ICheqdSDKOptions;
-
+  
   // create cheqd sdk
   const cheqdSDK = await createCheqdSDK(options);
 
@@ -46,7 +46,11 @@ const run = async () => {
   // update controller of did_document_b with did_document_a
   did_document_b.controller = [did_document_a.id]
 
-  await updateDid(did_document_b, keyPair_a, keyPair_b, feePayer, cheqdSDK);
+  await updateDid(did_document_b, did_document_a, keyPair_a, keyPair_b, feePayer, cheqdSDK);
+
+  did_document_b.controller = [did_document_b.id]
+
+  await updateDid(did_document_b, did_document_a, keyPair_a, keyPair_b, feePayer, cheqdSDK)
 };
 
 const createDid = async (keyPair: IKeyPair, feePayer: string, cheqdSDK: CheqdSDK) => {
@@ -95,15 +99,15 @@ const createDid = async (keyPair: IKeyPair, feePayer: string, cheqdSDK: CheqdSDK
   return didDocument
 }
 
-const updateDid = async (did_document_b: DIDDocument, keyPair_a: IKeyPair, keyPair_b: IKeyPair, feePayer: string, cheqdSDK: CheqdSDK) => {
+const updateDid = async (did_document_b: DIDDocument, did_document_a: DIDDocument, keyPair_a: IKeyPair, keyPair_b: IKeyPair, feePayer: string, cheqdSDK: CheqdSDK) => {
     // create sign inputs
     const signInputs = [
         {
-            verificationMethodId: did_document_b.verificationMethod![0].id, // controller b
+            verificationMethodId: `${did_document_b.id}#key-1`, // controller b
             privateKeyHex: toString(fromString(keyPair_b.privateKey, "base64"), "hex"), // signature b
         },
         {
-            verificationMethodId: `${did_document_b.controller![0]}#key-1`, // controller a
+            verificationMethodId: `${did_document_a.id}#key-1`, // controller a
             privateKeyHex: toString(fromString(keyPair_a.privateKey, "base64"), "hex"), // signature a
         },
     ] satisfies ISignInputs[];
